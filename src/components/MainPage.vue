@@ -6,15 +6,18 @@
         <div>content</div>
       </div>
       <div class="bg-border-content flex-2">
-        <div class="w-full" v-for="item in items" :key="item.id">
-          <div class="bg-border-content flex-3">
+        <div class="w-full" v-for="(item,index) in items" :key="item.id">
+          <div @click="openMenu(item.id)" class="bg-border-content flex-3">
             <img src="../assets/green.png" alt="" />
             <span class="span-absolute">{{ item.amount }}</span>
           </div>
-          <div v-if="isShow == true">
-            <img src="../assets/green.png" alt="">
+          <div class="menu" v-if="item.isShow == true">
+            <div class="content">
+              <img class="menu-img" src="../assets/biggreen.png" alt="">
             <p>{{item.desctiption}}</p>
-            <button>Удалить</button>
+            <button @click="deleteItem(index)">Удалить</button>
+            </div>
+            <span @click="item.isShow = false" class="close"></span>
           </div>
         </div>
       </div>
@@ -23,31 +26,32 @@
 </template>
 
 <script>
-import { ref } from '@vue/reactivity';
 export default {
-    setup() {
-        
-        const isShow = ref(false)
-        return{
-            isShow
-        }
-    },
   props: {
     items: {
       type: Array,
+      required: true
     },
   },
   methods: {
-     fuyt(id) {
+     openMenu(id) {
         this.items.map(x => {
           if(x.id == id) {
-            this.isShow = true
-          } else{
-            this.isShow = false
-          }
+            x.isShow = !x.isShow
+          } else{x.isShow =false}
           return x
         })
+    },
+    deleteItem(index) {
+      localStorage.setItem('items',JSON.stringify(this.items));
+      this.items.splice(index, 1)
+      this.items = JSON.parse(localStorage.getItem(this.items))
+      
     }
+  },
+  mounted(){
+      localStorage.setItem('items', JSON.stringify(this.items));
+      this.items = JSON.parse(localStorage.getItem("items")); 
   }
 };
 </script>
